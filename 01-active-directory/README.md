@@ -27,7 +27,7 @@ client that joins the domain and logs in with a domain account.
 | Internal network | 172.16.0.0/24 (VMware LAN Segment) |
 
 ## Network design
-![diagram](images/00-network-diagram.png)
+![diagram](00-network-diagram.png)
 
 - The DC has two network adapters: adapter 1 on NAT (internet via the host) and
   adapter 2 on a LAN Segment (private lab network).
@@ -44,33 +44,33 @@ client that joins the domain and logs in with a domain account.
 ### 1. Create the DC virtual machine
 Windows Server 2022 VM `ADDC01` with 8 GB RAM, 4 processors and a 100 GB disk.
 Adapter 1 is set to NAT and adapter 2 to a LAN Segment.
-![DC VM settings](images/01-dc-vm-settings.png)
-![DC network adapters](images/02-dc-network-adapters.png)
+![DC VM settings](01-dc-vm-settings.png)
+![DC network adapters](02-dc-network-adapters.png)
 
 ### 2. Identify and rename the network adapters
 In Network Connections, one adapter had a normal address (192.168.233.144 from
 VMware NAT) and the other showed "Unidentified network" with no DHCP available.
 I renamed them `Internet` and `Internal` so they are easy to tell apart when
 configuring NAT.
-![Adapters renamed](images/04-adapters-renamed.png)
+![Adapters renamed](04-adapters-renamed.png)
 
 ### 3. Set a static IP on the Internal adapter
 Internal adapter: IP `172.16.0.1`, mask `255.255.255.0`, no default gateway,
 preferred DNS `127.0.0.1`. The Internet adapter stays on DHCP. Confirmed with
 `ipconfig`.
-![Static IP](images/05-static-ip.png)
-![ipconfig result](images/05b-ipconfig.png)
+![Static IP](05-static-ip.png)
+![ipconfig result](05b-ipconfig.png)
 
 ### 4. Rename the server
 Renamed the server to `ADDC01`, restarted, and confirmed with `hostname`.
-![Rename server](images/04b-rename-server.png)
+![Rename server](04b-rename-server.png)
 
 ### 5. Install the AD DS role
 Server Manager > Add Roles and Features > Active Directory Domain Services,
 with the required management tools. Installation succeeded and showed
 "Configuration required" until the server was promoted.
-![AD DS role](images/06-adds-role.png)
-![AD DS installed](images/06b-adds-installed.png)
+![AD DS role](06-adds-role.png)
+![AD DS installed](06b-adds-installed.png)
 
 ### 6. Promote the server to a domain controller
 Promoted the server with a new forest, `kinglab.local`. Forest and domain
@@ -79,18 +79,18 @@ Catalog enabled. NetBIOS name `KINGLAB`. Set a DSRM password. A DNS delegation
 warning appeared (normal for a new forest with no parent zone). The prerequisite
 check passed, I took a VMware snapshot, then installed. The server restarted
 and the login screen showed `KINGLAB\Administrator`.
-![New forest](images/07a-new-forest.png)
-![Review options](images/07-promote-dc.png)
-![whoami](images/07e-whoami.png)
-![ADUC](images/07f-aduc-empty-domain.png)
+![New forest](07a-new-forest.png)
+![Review options](07-promote-dc.png)
+![whoami](07e-whoami.png)
+![ADUC](07f-aduc-empty-domain.png)
 
 ### 7. Create an admin OU and a dedicated domain admin account
 Created an OU named `_ADMINS` and an account `a-ktolentino` (King Tolentino)
 inside it, with "Password never expires" set (lab only). Added the account to
 **Domain Admins**, then signed in with it to confirm.
-![Admin OU](images/08-admin-ou.png)
-![Admin user](images/08b-admin-user.png)
-![Domain Admins membership](images/09-domain-admins.png)
+![Admin OU](08-admin-ou.png)
+![Admin user](08b-admin-user.png)
+![Domain Admins membership](09-domain-admins.png)
 
 ### 8. Install Remote Access (Routing) and configure NAT
 Installed the Remote Access role with the Routing role service (the wizard also
@@ -100,28 +100,28 @@ Manager Administration Kit as dependencies). In Routing and Remote Access I ran
 translation (NAT), and selected the `Internet` adapter as the public interface.
 Verified under IPv4 > NAT that the Internet interface is Public with "Enable NAT
 on this interface" ticked.
-![Remote Access confirm](images/10a-remote-access-confirm.png)
-![Remote Access installed](images/10b-remote-access-installed.png)
-![NAT interface selection](images/10-nat.png)
-![NAT configured](images/10c-nat-green.png)
-![NAT interfaces](images/10d-nat-interfaces.png)
-![NAT public interface](images/10e-nat-public.png)
+![Remote Access confirm](10a-remote-access-confirm.png)
+![Remote Access installed](10b-remote-access-installed.png)
+![NAT interface selection](10-nat.png)
+![NAT configured](10c-nat-green.png)
+![NAT interfaces](10d-nat-interfaces.png)
+![NAT public interface](10e-nat-public.png)
 
 ### 9. Install and authorize DHCP
 Installed the DHCP Server role, then ran "Complete DHCP configuration", which
 created the DHCP security groups and authorized the server in Active Directory
 using `KINGLAB\a-ktolentino`. Restarted the DHCP service so the security groups
 took effect. Both IPv4 and IPv6 show green checkmarks in the DHCP console.
-![DHCP installed](images/11b-dhcp-installed.png)
-![DHCP post-install](images/11c-dhcp-post-install.png)
-![DHCP console](images/11d-dhcp-console.png)
+![DHCP installed](11b-dhcp-installed.png)
+![DHCP post-install](11c-dhcp-post-install.png)
+![DHCP console](11d-dhcp-console.png)
 
 ### 10. Create and configure the DHCP scope
 In the DHCP console I ran IPv4 > New Scope. Scope name `172.16.0.100-200`.
 Address range `172.16.0.100` to `172.16.0.200`, length 24 (mask 255.255.255.0).
 The range starts at .100 so that .1 to .99 stay free for fixed-address devices
 such as the DC at .1.
-![DHCP range](images/11e-dhcp-range.png)
+![DHCP range](11e-dhcp-range.png)
 
 I added no exclusions, since all fixed-address devices sit below the range, and
 kept the default 8-day lease, which suits a small lab of desktop-style machines.
@@ -133,12 +133,12 @@ In the options pages I set:
 I chose to activate the scope at the end of the wizard. Under Scope Options the
 console shows `003 Router` = `172.16.0.1`, `006 DNS Servers` = `172.16.0.1` and
 `015 DNS Domain Name` = `kinglab.local`.
-![DHCP scope options](images/11f-dhcp-scope-options.png)
+![DHCP scope options](11f-dhcp-scope-options.png)
 
 ### 11. Bulk-create users with PowerShell
 First I created an OU named `_USERS` in Active Directory Users and Computers to
 hold the lab users.
-![USERS OU](images/12a-users-ou.png)
+![USERS OU](12a-users-ou.png)
 
 I looked up its path with `Get-ADOrganizationalUnit`, which returned
 `OU=_USERS,DC=kinglab,DC=local`, then saved a script as `New-LabUsers.ps1`
@@ -174,36 +174,36 @@ foreach ($Name in $Names) {
     Write-Host "Created $Name ($Sam)"
 }
 ```
-![Script running](images/12b-bulk-users-script.png)
+![Script running](12b-bulk-users-script.png)
 
 Afterwards I checked Active Directory Users and Computers and all ten users
 were listed in `_USERS`.
-![Users in the OU](images/12c-users-in-ou.png)
+![Users in the OU](12c-users-in-ou.png)
 
 ### 12. Build the Windows 10 client and join the domain
 Created a Windows 10 Pro VM with 2 vCPUs, 4 GB RAM and a 60 GB disk, with its
 network adapter on the same LAN Segment (`LabLan`) as the DC's Internal adapter.
-![Client VM settings](images/13a-client-vm-settings.png)
+![Client VM settings](13a-client-vm-settings.png)
 
 During setup I chose "Set up for an organization" and then "Domain join instead"
 to create a local account (`localadmin`) without a Microsoft account. Before
 joining the domain I checked the network from the client with `ipconfig /all`: it
 received `172.16.0.100` from the DHCP scope, with gateway, DHCP server and DNS
 server all `172.16.0.1` and the DNS suffix `kinglab.local`.
-![Client ipconfig](images/14a-client-ipconfig.png)
+![Client ipconfig](14a-client-ipconfig.png)
 
 `ping kinglab.local` reached the DC and `ping google.com` reached the internet
 through the DC's NAT.
-![Client ping tests](images/14b-client-ping-tests.png)
+![Client ping tests](14b-client-ping-tests.png)
 
 Then I renamed the computer to `CLIENT1` and joined `kinglab.local` in one step
 from System Properties, using the `a-ktolentino` domain admin account to
 authorize the join. Windows showed the welcome message and restarted.
-![Domain join](images/15a-domain-join.png)
+![Domain join](15a-domain-join.png)
 
 After the restart I chose Other user and signed in as `KINGLAB\msantos`, one of
 the accounts created by the script. `whoami` returned `kinglab\msantos`.
-![Domain login](images/15b-domain-login-whoami.png)
+![Domain login](15b-domain-login-whoami.png)
 
 ### 13. Verify everything works
 | Check | Where / command | Result |
@@ -214,8 +214,8 @@ the accounts created by the script. `whoami` returned `kinglab\msantos`.
 | Computer object created | AD Users and Computers > Computers | Pass: `CLIENT1` is listed |
 | Domain login works | `whoami` as a domain user on CLIENT1 | Pass: `kinglab\msantos` |
 
-![DHCP lease](images/16a-dhcp-lease.png)
-![Computer object](images/16b-computer-object.png)
+![DHCP lease](16a-dhcp-lease.png)
+![Computer object](16b-computer-object.png)
 
 ## Problems I Hit and How I Fixed Them
 
@@ -226,7 +226,7 @@ the accounts created by the script. `whoami` returned `kinglab\msantos`.
   on locally to a domain controller.
   **Fix:** Added the account to Domain Admins again, clicked Apply (button greyed
   out), and signed in successfully.
-  ![Sign-in not allowed](images/09c-signin-not-allowed.png)
+  ![Sign-in not allowed](09c-signin-not-allowed.png)
 
 - **Problem:** In the NAT setup wizard, the list of network interfaces was empty,
   so I could not select the public interface.
@@ -234,7 +234,7 @@ the accounts created by the script. `whoami` returned `kinglab\msantos`.
   interface list after the role was installed.
   **Fix:** Cancelled the wizard, closed and reopened the console, and ran the
   wizard again. Both adapters then appeared.
-  ![Empty interface list](images/10c-nat-empty-interface-list.png)
+  ![Empty interface list](10c-nat-empty-interface-list.png)
 
 - **Problem:** A DNS delegation warning appeared during domain controller
   promotion.
