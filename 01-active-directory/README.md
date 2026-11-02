@@ -14,15 +14,15 @@ client that joins the domain and logs in with a domain account.
 - [x] DHCP role installed and authorized
 - [x] DHCP scope and scope options configured, scope activated
 - [x] Users bulk-created with PowerShell
-- [ ] Windows 10 Pro client joined to the domain
-- [ ] Verification complete
+- [x] Windows 10 Pro client joined to the domain
+- [x] Verification complete
 
 ## Environment
 | Item | Value |
 |------|-------|
 | Hypervisor | VMware Workstation (VM hardware compatibility: Workstation 25H2) |
 | DC | Windows Server 2022 Standard (Evaluation), hostname `ADDC01`, 8 GB RAM, 4 vCPU, 100 GB disk |
-| Client | Windows 10 Pro, hostname `CLIENT1` (planned) |
+| Client | Windows 10 Pro, hostname `CLIENT1`, 4 GB RAM, 2 vCPU, 60 GB disk |
 | Domain | `kinglab.local` (NetBIOS: `KINGLAB`) |
 | Internal network | 172.16.0.0/24 (VMware LAN Segment) |
 
@@ -36,8 +36,8 @@ client that joins the domain and logs in with a domain account.
   the DHCP server built on the DC.
 - DC internal IP: `172.16.0.1/24`, no default gateway, DNS set to itself
   (`127.0.0.1`).
-- Client (planned): one adapter on the same LAN Segment, gets its settings from
-  DHCP and reaches the internet through the DC.
+- Client: one adapter on the same LAN Segment, gets its settings from DHCP and
+  reaches the internet through the DC.
 
 ## Steps
 
@@ -80,10 +80,7 @@ warning appeared (normal for a new forest with no parent zone). The prerequisite
 check passed, I took a VMware snapshot, then installed. The server restarted
 and the login screen showed `KINGLAB\Administrator`.
 ![New forest](images/07a-new-forest.png)
-![DNS delegation warning](images/07b-dns-delegation-warning.png)
 ![Review options](images/07-promote-dc.png)
-![Prerequisite check](images/07c-prereq-check.png)
-![Domain login screen](images/07d-domain-login.png)
 ![whoami](images/07e-whoami.png)
 ![ADUC](images/07f-aduc-empty-domain.png)
 
@@ -94,7 +91,6 @@ inside it, with "Password never expires" set (lab only). Added the account to
 ![Admin OU](images/08-admin-ou.png)
 ![Admin user](images/08b-admin-user.png)
 ![Domain Admins membership](images/09-domain-admins.png)
-![Admin login](images/09b-admin-login.png)
 
 ### 8. Install Remote Access (Routing) and configure NAT
 Installed the Remote Access role with the Routing role service (the wizard also
@@ -116,7 +112,6 @@ Installed the DHCP Server role, then ran "Complete DHCP configuration", which
 created the DHCP security groups and authorized the server in Active Directory
 using `KINGLAB\a-ktolentino`. Restarted the DHCP service so the security groups
 took effect. Both IPv4 and IPv6 show green checkmarks in the DHCP console.
-![DHCP confirm](images/11a-dhcp-confirm.png)
 ![DHCP installed](images/11b-dhcp-installed.png)
 ![DHCP post-install](images/11c-dhcp-post-install.png)
 ![DHCP console](images/11d-dhcp-console.png)
@@ -185,19 +180,42 @@ Afterwards I checked Active Directory Users and Computers and all ten users
 were listed in `_USERS`.
 ![Users in the OU](images/12c-users-in-ou.png)
 
-### 12. Build the Windows 10 client and join the domain (TO DO)
-<Windows 10 Pro VM on the same LAN Segment, confirm the DHCP lease and the default
-gateway, ping the internet and the domain, rename to CLIENT1, join `kinglab.local`,
-log in with a domain account.>
+### 12. Build the Windows 10 client and join the domain
+Created a Windows 10 Pro VM with 2 vCPUs, 4 GB RAM and a 60 GB disk, with its
+network adapter on the same LAN Segment (`LabLan`) as the DC's Internal adapter.
+![Client VM settings](images/13a-client-vm-settings.png)
 
-### 13. Verify everything works (TO DO)
+During setup I chose "Set up for an organization" and then "Domain join instead"
+to create a local account (`localadmin`) without a Microsoft account. Before
+joining the domain I checked the network from the client with `ipconfig /all`: it
+received `172.16.0.100` from the DHCP scope, with gateway, DHCP server and DNS
+server all `172.16.0.1` and the DNS suffix `kinglab.local`.
+![Client ipconfig](images/14a-client-ipconfig.png)
+
+`ping kinglab.local` reached the DC and `ping google.com` reached the internet
+through the DC's NAT.
+![Client ping tests](images/14b-client-ping-tests.png)
+
+Then I renamed the computer to `CLIENT1` and joined `kinglab.local` in one step
+from System Properties, using the `a-ktolentino` domain admin account to
+authorize the join. Windows showed the welcome message and restarted.
+![Domain join](images/15a-domain-join.png)
+
+After the restart I chose Other user and signed in as `KINGLAB\msantos`, one of
+the accounts created by the script. `whoami` returned `kinglab\msantos`.
+![Domain login](images/15b-domain-login-whoami.png)
+
+### 13. Verify everything works
 | Check | Where / command | Result |
 |-------|-----------------|--------|
-| Client got a DHCP lease | DHCP > Address Leases on the DC | |
-| Client resolves names | `ping google.com` | |
-| Client reaches DC by domain name | `ping kinglab.local` | |
-| Computer object created | AD Users and Computers > Computers | |
-| Domain login works | `whoami` as a domain user on CLIENT1 | |
+| Client got a DHCP lease | DHCP > Address Leases on the DC | Pass: `CLIENT1.kinglab.local` holds `172.16.0.100` |
+| Client resolves names | `ping google.com` | Pass: 4 of 4 replies |
+| Client reaches DC by domain name | `ping kinglab.local` | Pass: resolves to `172.16.0.1`, 4 of 4 replies |
+| Computer object created | AD Users and Computers > Computers | Pass: `CLIENT1` is listed |
+| Domain login works | `whoami` as a domain user on CLIENT1 | Pass: `kinglab\msantos` |
+
+![DHCP lease](images/16a-dhcp-lease.png)
+![Computer object](images/16b-computer-object.png)
 
 ## Problems I Hit and How I Fixed Them
 
@@ -247,10 +265,10 @@ be acceptable in production. Windows 10 reached end of support in October 2025,
 so it is used here for the lab only.
 
 ## What I Learned
-- <how DNS, DHCP and NAT fit together>
-- <why a separate admin account is used>
-- <what /24 means and how I chose the DHCP range>
-- <anything else, in your own words>
+- DHCP, DNS and NAT work together to get CLIENT1 on the network. DHCP gives CLIENT1 a unique IP address plus its gateway, DNS server and domain suffix. DNS turns a name like `kinglab.local` into an IP address so CLIENT1 can find the domain controller. NAT lets CLIENT1 reach the internet by swapping its private IP for the DC's outside address.
+- A separate admin account follows the principle of least privilege: only authorized users get the powerful functions, and everyone else, like `msantos`, gets only what they need. This reduces the risk of misconfiguration and of unauthorized users reaching sensitive information. It also means my everyday account isn't a domain admin, so if it were compromised, the attacker wouldn't control the whole domain.
+- `/24` means the first 24 bits of the address identify the network (mask `255.255.255.0`). That leaves 8 bits for devices, so 254 usable addresses, which is plenty for a small lab. I started the DHCP range at `172.16.0.100` because `.1` is already used by the DC, which is the gateway, DNS and DHCP server. I also wanted `.1` to `.99` free for fixed-address devices so DHCP doesn't hand out an address that's already taken.
+- Two of my problems taught me to verify every change instead of assuming it worked. My admin account couldn't sign in because I closed the Properties window without clicking Apply, so the Domain Admins membership never saved. Later, my user script failed with "Access is denied" because PowerShell ISE wasn't running as administrator, yet it still printed "Created" for every user. Now I run admin tasks in an elevated session, and I check the result in Active Directory instead of trusting the script's output.
 
 ## What's Next
 - Group Policy and file shares (Lab 2)
@@ -259,4 +277,5 @@ so it is used here for the lab only.
 ## Credit
 Network design and approach follow Josh Madakor's Active Directory home lab video
 (VirtualBox, Server 2019), rebuilt in VMware with Windows Server 2022 and
-Windows 10, using my own domain name and notes.
+Windows 10, using my own domain name and notes. Early steps were also informed by
+Kevtech IT Support's "IT: Helpdesk lab 2025" playlist.
