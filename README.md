@@ -16,8 +16,7 @@ documented step by step, including the problems I hit and how I fixed them.
 | 6 | RMM | Remote scripts, patching, alerts | Planned |
 
 ## Tools
-VirtualBox • Windows Server • Windows 11 • Microsoft 365 trial tenant •
-PowerShell • Tactical RMM
+VMware Workstation • Windows Server 2022 • Windows 10 • Microsoft 365 trial tenant • PowerShell • Tactical RMM
 
 ## About me
 King FJ Tolentino, Level 2 Desktop Support Engineer supporting 4,000+
