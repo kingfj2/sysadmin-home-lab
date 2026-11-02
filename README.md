@@ -8,7 +8,7 @@ documented step by step, including the problems I hit and how I fixed them.
 
 | # | Lab | Skills | Status |
 |---|-----|--------|--------|
-| 1 | Active Directory & Windows Server | AD DS, OUs, DNS/DHCP, domain join | Planned |
+| 1 | Active Directory & Windows Server | AD DS, OUs, DNS/DHCP, domain join | COMPLETED |
 | 2 | Group Policy, File Shares & PowerShell | GPO, NTFS permissions, bulk user scripts | Planned |
 | 3 | Microsoft 365 & Entra ID | Users, licenses, MFA, Conditional Access | Planned |
 | 4 | Intune & Autopilot | Enrollment, compliance, app deployment | Planned |
