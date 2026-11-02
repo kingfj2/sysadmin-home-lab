@@ -1,8 +1,5 @@
 # Lab 1: Active Directory, DHCP, NAT and Bulk User Creation
 
-> DRAFT STATUS (Nov 2, 2026): Steps 1-11 are done. Steps 12-13 are still to do.
-> Delete this note before publishing.
-
 ## Goal
 Build a small corporate-style Windows network from scratch: a domain controller
 that provides Active Directory, DNS, DHCP and NAT routing, plus a Windows 10
@@ -262,5 +259,4 @@ so it is used here for the lab only.
 ## Credit
 Network design and approach follow Josh Madakor's Active Directory home lab video
 (VirtualBox, Server 2019), rebuilt in VMware with Windows Server 2022 and
-Windows 10, using my own domain name and notes. Early steps were also informed by
-Kevtech IT Support's "IT: Helpdesk lab 2025" playlist.
+Windows 10, using my own domain name and notes.
