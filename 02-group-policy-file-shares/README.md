@@ -57,8 +57,8 @@ Access is controlled in three layers, each doing a different job:
 
 ## Steps
 
-### 1. Take snapshots before changing anything
-Group Policy changes can lock users out, so I took a snapshot named `Lab2-shares-done` on both VMs before the GPO work. The `LAB 1 complete` snapshot from the end of Lab 1 was already there.
+### 1. Use snapshots as rollback points
+Group Policy changes can lock users out, so I kept rollback points on both VMs. `LAB 1 complete` was already there from the end of Lab 1, and I took `Lab2-shares-done` after the groups, folders, permissions and shares were working and before starting the GPO work.
 ![ADDC01 snapshots](01a-snapshots-addc01.png)
 ![CLIENT1 snapshots](01b-snapshots-client1.png)
 
