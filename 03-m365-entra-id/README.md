@@ -15,7 +15,6 @@ Add a cloud identity to my lab next to the on-premises domain from Labs 1 and 2.
 - [x] Existing Conditional Access policies reviewed
 - [x] Maria retested under the MFA policy
 - [x] Sign-in logs checked as evidence
-- [ ] Custom Conditional Access policy of my own
 
 ## Environment
 | Item | Value |
@@ -133,7 +132,6 @@ In Entra ID > Monitoring & health > Sign-in logs I filtered for Maria. Log times
 | MFA policy is On and covers Maria | Policy and sign-in log | Pass: user and app Matched |
 | Maria met the MFA requirement | Sign-in log | Pass: device-bound passkey succeeded |
 | Authenticator push approval seen in a log | Sign-in log | **Not observed**: both tests used the passkey |
-| Custom Conditional Access policy | Entra ID | Not built yet |
 
 ## Findings
 
@@ -180,7 +178,6 @@ This is a trial tenant with no real data. Screenshots have the Tenant ID, person
 - The sign-in log is stronger evidence than an on-screen prompt because it records which policy was evaluated, which conditions matched and whether the requirement was met.
 
 ## What's Next
-- Conditional Access: build a custom policy of my own
 - Intune (Lab 4)
 - Connect `ADDC01` to the tenant (Lab 5)
 
