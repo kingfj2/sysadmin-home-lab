@@ -10,13 +10,13 @@ documented step by step, including the problems I hit and how I fixed them.
 |---|-----|--------|--------|
 | 1 | [Active Directory & Windows Server](01-active-directory) | AD DS, OUs, DNS/DHCP, domain join | COMPLETED |
 | 2 | [Group Policy, File Shares & PowerShell](02-group-policy-file-shares) | Security groups, NTFS/SMB permissions, GPO drive maps, PowerShell | COMPLETED |
-| 3 | Microsoft 365 & Entra ID | Users, licenses, MFA, Conditional Access | Planned |
-| 4 | Intune & Autopilot | Enrollment, compliance, app deployment | Planned |
-| 5 | Hybrid Identity & Exchange Online | Entra Connect, mailboxes, mail flow | Planned |
+| 3 | [Microsoft 365 & Entra ID](03-m365-entra-id) | Users, licenses, MFA, Conditional Access (review) | COMPLETED |
+| 4 | [Intune Device Management](04-intune) | Enrollment, compliance, config profiles, app deployment | COMPLETED |
+| 5 | Conditional Access (report-only) | Custom policy, compliant-device requirement | Planned |
 | 6 | RMM | Remote scripts, patching, alerts | Planned |
 
 ## Tools
-VMware Workstation • Windows Server 2022 • Windows 10 • Microsoft 365 trial tenant • PowerShell • Tactical RMM
+VMware Workstation • Windows Server 2022 • Windows 10 • Windows 11 • Microsoft 365 trial tenant • Microsoft Intune • PowerShell • Tactical RMM
 
 ## About me
 King FJ Tolentino, Level 1 Desktop Support Engineer supporting 4,000+
