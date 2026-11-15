@@ -220,9 +220,8 @@ On the VM, Settings > Apps > Installed apps listed **VLC media player 3.0.23** f
 
 ## What's Next
 
-- Keep the enrolled VM, both policies and the pilot scope in place to keep practicing before the trial ends.
-- A separate lab for my own Conditional Access policy in report-only mode, including a policy that requires a compliant device.
-- Lab 5: connect `ADDC01` to the tenant.
+- Keep the enrolled VM, both policies and the pilot scope in place until the trial ends, to keep practicing.
+- A separate lab for my own Conditional Access policy in report-only mode, including one that requires a compliant device, done while the trial's Entra ID P1 features are available.
 - Export my work before Dec 3 and cancel the trial before Dec 8.
 
 ## Credit
