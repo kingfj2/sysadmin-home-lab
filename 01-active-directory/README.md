@@ -19,7 +19,7 @@ client that joins the domain and logs in with a domain account.
 
 ## Environment
 | Item | Value |
-
+|------|-------|
 | Hypervisor | VMware Workstation (VM hardware compatibility: Workstation 25H2) |
 | DC | Windows Server 2022 Standard (Evaluation), hostname `ADDC01`, 8 GB RAM, 4 vCPU, 100 GB disk |
 | Client | Windows 10 Pro, hostname `CLIENT1`, 4 GB RAM, 2 vCPU, 60 GB disk |
